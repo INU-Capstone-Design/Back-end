@@ -1,6 +1,6 @@
 import logging
 import pymysql
-import sys
+from config import db
 from flask import Flask, request  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 
@@ -10,35 +10,24 @@ api = Api(app)  # Flask 객체에 Api 객체 등록
 @api.route('/login')  # 데코레이터 이용, '/hello' 경로에 클래스 등록
 class Login(Resource):
     def post(self):
-        # DB 정보
-        host = "localhost"
-        port = 3306
-        database = "mind_db"
-        username = "mungiyo"
-        password = "102489"
+        userid = request.json.get('userid')
+        password = request.json.get('password')
 
         # DB connection 생성
         try:
-            conn = pymysql.connect(
-                host=host,
-                user=username,
-                passwd=password,
-                database=database,
-                port=port,
-                use_unicode=True,
-                charset='utf8'
+            connection = pymysql.connect(
+                user=db["user"],
+                passwd=db["password"],
+                host=db["host"],
+                database=db["database"],
+                charset=db["charset"]
             )
-            cursor = conn.cursor
+            cursor = connection.cursor()
         except:
             logging.error("DB connection failed")
-            sys.exit()
+            return {"result": "DB 연결 실패"}
         
-
-        userid = request.form['username']
-        password = request.form['password']
-
         query = f"SELECT * FROM Users WHERE userid='{userid}' and password='{password}'"
-        # query = f"SELECT * FROM Users"
         cursor.execute(query)
         result = cursor.fetchone()
 
@@ -47,5 +36,41 @@ class Login(Resource):
         else:
             return {"result": "fail"}
 
+
+@api.route('/register')
+class Register(Resource):
+    def post(self):
+        userid = request.json.get('userid')
+        password = request.json.get('password')
+        name = request.json.get('name')
+        email = request.json.get('email')
+
+        # DB connection 생성
+        try:
+            connection = pymysql.connect(
+                user=db["user"],
+                passwd=db["password"],
+                host=db["host"],
+                database=db["database"],
+                charset=db["charset"]
+            )
+            cursor = connection.cursor()
+        except:
+            logging.error("DB connection failed")
+            return {"result": "DB 연결 실패"}
+        
+        query = f"INSERT INTO Users(userid, password, name, email) \
+                  VALUES('{userid}', '{password}', '{name}', '{email}')"
+        
+        # query 실행
+        try:
+            cursor.execute(query)
+            # query 성공 시 commit으로 DB에 반영
+            connection.commit()
+            return {'result': 'success'}
+        except:
+            logging.error("INSERT fail")
+            return {"result": "fail"}
+
 if __name__ == "__main__":
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=5000)
