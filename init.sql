@@ -3,29 +3,31 @@ CREATE DATABASE test;
 USE test;
 
 CREATE TABLE Users (
-    userid      VARCHAR(20) NOT NULL PRIMARY KEY,
+    username    VARCHAR(20) NOT NULL,
     password    VARCHAR(30) NOT NULL,
     name        VARCHAR(20),
     email       VARCHAR(40),
-    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE Working_groups (
-    g_pk        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userid      VARCHAR(20) NOT NULL,
-    is_master   TINYINT,
-    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (userid) REFERENCES Users(userid)
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (username)
 );
 
 CREATE TABLE Workspaces (
-    w_pk        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    g_pk        INT,
+    workspaceId INT NOT NULL AUTO_INCREMENT,
+    username    VARCHAR(20) NOT NULL,
     map_HTML    LONGTEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (g_pk) REFERENCES Working_groups(g_pk)
+    PRIMARY KEY (workspaceId),
+    FOREIGN KEY (username) REFERENCES Users(username)
 );
 
-INSERT INTO Users(userid, password, name, email) VALUES('test01', '1234', 'jang', 'test@gmail.com');
-INSERT INTO Working_groups(userid, is_master) VALUES('test01', 1);
-INSERT INTO Workspaces(g_pk, map_HTML) VALUES(1, "Hello World");
+CREATE TABLE Groupings (
+    username    VARCHAR(20),
+    workspaceId INT,
+    PRIMARY KEY (username, workspaceId),
+    FOREIGN KEY (username)      REFERENCES Users(username),
+    FOREIGN KEY (workspaceId)   REFERENCES Workspaces(workspaceId)
+);
+
+INSERT INTO Users(username, password, name, email) VALUES('test01', '1234', 'jang', 'test@gmail.com');
+INSERT INTO Workspaces(username, map_HTML) VALUES('test01', 'Hello World');
+INSERT INTO Groupings(username, workspaceId) VALUES('test01', 1)
