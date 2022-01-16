@@ -9,7 +9,7 @@ api = Api(app)  # Flask 객체에 Api 객체 등록
 
 # ----회원 정보 관리----
 # 회원 CREATE
-@api.route('/members')
+@api.route('/users')
 class CreateUser(Resource):
     def post(self):
         try:
@@ -54,7 +54,7 @@ class CreateUser(Resource):
 
 
 # 특정 회원 정보 READ
-@api.route('/members/<int:userid>')
+@api.route('/users/<int:userid>')
 class ReadUser(Resource):
     def get(self, userid: int):
         try:
