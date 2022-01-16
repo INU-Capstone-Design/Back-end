@@ -12,13 +12,14 @@ api = Api(app)  # Flask 객체에 Api 객체 등록
 @api.route('/members')
 class CreateUser(Resource):
     def post(self):
-        username = request.json.get('username')
-        password = request.json.get('password')
-        name = request.json.get('name')
-        email = request.json.get('email')
-
-        # DB connection 생성
         try:
+            # 프론트에서 넘겨준 json 파일의 데이터 저장
+            username = request.json.get('username') # 유저 ID
+            password = request.json.get('password') # 비밀번호
+            name = request.json.get('name')         # 이름
+            email = request.json.get('email')       # 이메일주소
+
+            # DB connection 생성
             connection = pymysql.connect(
                 user=db["user"],
                 passwd=db["password"],
@@ -26,39 +27,38 @@ class CreateUser(Resource):
                 database=db["database"],
                 charset=db["charset"]
             )
-            cursor = connection.cursor()
-        except:
-            logging.error("DB connection failed")
-            return {"result": "DB 연결 실패"}
-        
-        # 중복 되는 회원 있는지 확인
-        try:
-            query = f"SELECT * FROM Users WHERE username='{username}'"
-            cursor.execute(query)
-            if cursor.fetchone():
-                return {"result": "user is overlapping"}
-        except:
-            logging.error("Users select query fail")
-            return {"result": "회원 중복 체크 실패"}
 
-        # 회원 정보 DB에 추가
-        try:
-            query = f"INSERT INTO Users(userid, password, name, email) \
-                  VALUES('{username}', '{password}', '{name}', '{email}')"
-            cursor.execute(query)
-            connection.commit()
+            # 중복 되는 회원 있는지 확인
+            with connection.cursor() as cur:
+                query = f"SELECT * FROM Users WHERE username='{username}'"
+                cur.execute(query)
+                if cur.fetchone():
+                    return {"result": "user is overlapping"}
+
+            # 회원 정보 DB에 추가
+            with connection.cursor() as cur:
+                query = f"INSERT INTO Users(userid, password, name, email) \
+                          VALUES('{username}', '{password}', '{name}', '{email}')"
+                cur.execute(query)
+                connection.commit()
+
             return {'result': 'user create success'}
+
         except:
-            logging.error("Users insert query fail")
-            return {"result": "회원 DB 추가 실패"}
+            logging.error("Error !!")
+            return {"result": "fail"}
+        
+        finally:
+            connection.close()
+        
 
 
 # 특정 회원 정보 READ
 @api.route('/members/<int:userid>')
 class ReadUser(Resource):
-    def get(self, userid):
-        # DB connection 생성
+    def get(self, userid: int):
         try:
+            # DB connection 생성
             connection = pymysql.connect(
                 user=db["user"],
                 passwd=db["password"],
@@ -66,34 +66,35 @@ class ReadUser(Resource):
                 database=db["database"],
                 charset=db["charset"]
             )
-            cursor = connection.cursor()
+
+            # userid로 DB에 쿼리 입력
+            with connection.cursor() as cur:
+                query = f"SELECT * FROM Users WHERE userid={userid}"
+                cur.execute(query)
+                result = cur.fetchone()
+            
+            # 검색되지 않으면 DB에 유저의 정보가 없는 것으로 반환
+            # 있으면 그 유저의 정보 반환
+            if (result is not None):
+                return {
+                    "result": "success",
+                    #"userid": result[0],
+                    "username": result[1],
+                    "password": result[2],
+                    "name": result[3],
+                    "email": result[4],
+                    "create_time": str(result[5])
+                }
+            else:
+                return {"result": "No User"}
+
         except:
             logging.error("DB connection failed")
             return {"result": "DB connect fail"}
         
-        try:
-            query = f"SELECT * FROM Users WHERE userid={userid}"
-            cursor.execute(query)
-        except:
-            logging.error("Users select query failed")
-            return {"result": "회원 정보 검색 실패"}
+        finally:
+            connection.close()
 
-        result = cursor.fetchone()
-        connection.close()
-        cursor.close()
-
-        if (result is not None):
-            return {
-                "result": "success",
-                "userid": result[0],
-                "username": result[1],
-                "password": result[2],
-                "name": result[3],
-                "email": result[4],
-                "create_time": str(result[5])
-            }
-        else:
-            return {"result": "No User"}
 
 
 # ----워크스페이스 관리----
@@ -106,19 +107,19 @@ class WorkspaceCreate(Resource):
 # Workspace read REST API
 @api.route('/workspace/read')
 class WorkspaceRead(Resource):
-    def post(self):
+    def get(self):
         pass
 
 # Workspace update REST API
 @api.route('/workspace/update')
 class WorkspaceUpdate(Resource):
-    def post(self):
+    def put(self):
         pass
 
 # Workspace delete REST API
 @api.route('/workspace/delete')
 class WorkspaceDelete(Resource):
-    def post(self):
+    def delete(self):
         pass
 
 
