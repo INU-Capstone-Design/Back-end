@@ -23,7 +23,7 @@ CREATE TABLE Workspaces (
 
 CREATE TABLE Groupings (
     userid      INT,
-    workspaceId INT,
+    workspaceid INT,
     PRIMARY KEY (userId, workspaceId),
     FOREIGN KEY (userId)        REFERENCES Users(userId),
     FOREIGN KEY (workspaceId)   REFERENCES Workspaces(workspaceId)
