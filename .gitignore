@@ -130,3 +130,6 @@ dmypy.json
 
 # flask 설정파일
 config.py
+
+# SQL 파일
+init.sql
