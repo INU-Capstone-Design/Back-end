@@ -78,7 +78,8 @@ class UserCreate(Resource):
                 connection.commit()
 
             return {
-                'state': 1
+                'state': 1,
+                'result': '회원 생성 성공.'
             }
 
         except:
@@ -167,17 +168,65 @@ class UserManage(Resource):
             # DB에서 유저 정보 업데이트
             with connection.cursor() as cur:
                 query = f"UPDATE Users \
-                          SET username={username}, password={password}, name={name}, email={email} \
+                          SET username='{username}', password='{password}', name='{name}', email='{email}' \
                           WHERE userid={userid}"
                 cur.execute(query)
                 connection.commit()
+            
+            return {
+                'state': 1,
+                'result': '회원 정보 업데이트 성공.'
+            }
         except:
             logging.error("회원 정보 업데이트 실패.")
             return {
                 'state': 0,
                 'result': 'Bad Request'
             }
+        
+        finally:
+            connection.close()
     
     # 회원 DELETE
     def delete(self, userid: int):
-        pass
+        try:
+            # DB connection 생성
+            connection = pymysql.connect(
+                user=db["user"],
+                passwd=db["password"],
+                host=db["host"],
+                database=db["database"],
+                charset=db["charset"]
+            )
+            
+            # DB에 userid의 유저 있는지 확인
+            with connection.cursor() as cur:
+                query = f"SELECT * FROM Users WHERE userid={userid}"
+                cur.execute(query)
+                result = cur.fetchone()
+                
+                if not result:
+                    return {
+                        'state': 0,
+                        'result': '회원이 존재하지 않습니다.'
+                    }
+            
+            # DB에서 유저 정보 업데이트
+            with connection.cursor() as cur:
+                query = f"DELETE FROM Users WHERE userid={userid}"
+                cur.execute(query)
+                connection.commit()
+            
+            return {
+                'state': 1,
+                'result': '회원 정보 삭제 성공.'
+            }
+        except:
+            logging.error("회원 정보 삭제 실패.")
+            return {
+                'state': 0,
+                'result': 'Bad Request'
+            }
+        
+        finally:
+            connection.close()
