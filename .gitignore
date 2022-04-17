@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # flask 설정파일
-config.py
+# config.py
 
 # SQL 파일
-init.sql
+# init.sql

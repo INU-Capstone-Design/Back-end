@@ -1,6 +1,6 @@
 import logging
 import pymysql
-from config import db
+from .config import db
 from flask import request, json  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Resource, Namespace  # Api 구현을 위한 Api 객체 import
 
