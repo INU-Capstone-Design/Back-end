@@ -6,8 +6,8 @@ services:
     build: ./mysql
     ports:
       - "3306:3306"
-    environment:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - ./mysql/.env
     volumes:
       - ./mysql/data:/var/lib/mysql
     logging:

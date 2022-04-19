@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS testdb;
 CREATE DATABASE testdb;
 USE testdb;
 
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '1234';
+
 SET GLOBAL time_zone='+09:00';
 SET time_zone='+09:00';
 
