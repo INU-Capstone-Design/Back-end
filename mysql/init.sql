@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS testdb;
-CREATE DATABASE testdb;
-USE testdb;
+DROP DATABASE IF EXISTS test;
+CREATE DATABASE test;
+USE test;
 
 ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '1234';
 
@@ -9,9 +9,9 @@ SET time_zone='+09:00';
 
 CREATE TABLE Users (
     userid      INT NOT NULL AUTO_INCREMENT,
-    username    VARCHAR(20) NOT NULL,
-    password    VARCHAR(30) NOT NULL,
-    name        VARCHAR(20),
+    username    VARCHAR(30) NOT NULL,
+    password    VARCHAR(100) NOT NULL,
+    name        VARCHAR(30),
     email       VARCHAR(40),
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -21,7 +21,7 @@ CREATE TABLE Users (
 CREATE TABLE Workspaces (
     workspaceid INT NOT NULL AUTO_INCREMENT,
     userid      INT,
-    map_HTML    LONGTEXT NOT NULL,
+    mindmap_info    LONGTEXT NOT NULL,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (workspaceId),
@@ -41,9 +41,9 @@ CREATE TABLE Groupings (
 INSERT INTO Users(username, password, name, email) VALUES('test01', '1234', 'jang', 'test01@gmail.com');
 INSERT INTO Users(username, password, name, email) VALUES('test02', '1234', 'kang', 'test02@gmail.com');
 INSERT INTO Users(username, password, name, email) VALUES('test03', '1234', 'gang', 'test03@gmail.com');
-INSERT INTO Workspaces(userid, map_HTML) VALUES(1, 'map html text 1');
-INSERT INTO Workspaces(userid, map_HTML) VALUES(1, 'map html text 2');
-INSERT INTO Workspaces(userid, map_HTML) VALUES(2, 'map html text 3');
+INSERT INTO Workspaces(userid, mindmap_info) VALUES(1, 'map html text 1');
+INSERT INTO Workspaces(userid, mindmap_info) VALUES(1, 'map html text 2');
+INSERT INTO Workspaces(userid, mindmap_info) VALUES(2, 'map html text 3');
 INSERT INTO Groupings(userid, workspaceid) VALUES(1, 1);
 INSERT INTO Groupings(userid, workspaceid) VALUES(1, 2);
 INSERT INTO Groupings(userid, workspaceid) VALUES(2, 3);

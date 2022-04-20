@@ -1,10 +1,12 @@
-import logging
-import pymysql
-from .config import db
-from flask import request, json  # 서버 구현을 위한 Flask 객체 import
-from flask_restx import Resource, Namespace  # Api 구현을 위한 Api 객체 import
+import bcrypt, jwt
+from flask import request
+from database import engine, Users
+from flask_restx import Resource, Namespace, fields
 
-Workspace = Namespace('Workspace')
+Workspace = Namespace(
+    name='Workspace',
+    description="워크스페이스 관리를 위한 API"
+)
 
 # ----워크스페이스 관리----
 @Workspace.route('')

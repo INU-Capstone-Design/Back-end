@@ -2,14 +2,15 @@ version: "3"
 
 services:
   mysql:
+    image: mysql:latest
     container_name: mysql
-    build: ./mysql
     ports:
       - "3306:3306"
     env_file:
       - ./mysql/.env
     volumes:
       - ./mysql/data:/var/lib/mysql
+      - ./mysql/:/docker-entrypoint-initdb.d/
     logging:
         options:
             max-size: 10m

@@ -22,19 +22,16 @@ class Config(object):
 class ProductionConfig(Config):
     DEBUG = False
     NAME = "PROD"
-    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_FORMAT
 
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     NAME = "DEV"
-    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_FORMAT
 
 
 class TestingConfig(Config):
     TESTING = True
     NAME = "TEST"
-    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_FORMAT
     
 config = {"test": TestingConfig, "dev": DevelopmentConfig, "prod": ProductionConfig}
