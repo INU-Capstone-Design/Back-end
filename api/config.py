@@ -8,7 +8,7 @@ SQLALCHEMY_DATABASE_URI_FORMAT = SQLALCHEMY_DATABASE_URI.format(
     PASSWORD="1234",
     ADDR="127.0.0.1",
     PORT=3306,
-    NAME="test"
+    NAME="minders"
 )
 
 class Config(object):
@@ -16,6 +16,7 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = "super-secret"
+    JWT_SECRET_KEY = "secret"
     SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_FORMAT
 
 

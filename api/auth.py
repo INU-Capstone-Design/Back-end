@@ -1,30 +1,32 @@
-import bcrypt, jwt
+import bcrypt
+from datetime import timedelta
 from flask import request
-from database import engine, Users
 from flask_restx import Resource, Namespace, fields
+from flask_jwt_extended import (jwt_required, create_access_token, get_jwt_identity)
+from database import engine, Users
 
 Auth = Namespace(
     name="Auth",
     description="사용자 인증을 위한 API"
 )
 
-user_fields = Auth.model('User', {  # Model 객체 생성
+user_fields_auth = Auth.model('User Auth', {  # Model 객체 생성
     'username': fields.String(description='Username', required=True, example="capstone"),
     'password': fields.String(description='Password', required=True, example="password")
 })
 
-user_fields_auth = Auth.inherit('User Auth', user_fields, {
+user_fields = Auth.inherit('User', user_fields_auth, {
     'name': fields.String(description='Name', required=False, example="HongGilDong"),
-    'email': fields.String(description='Email', required=False, example="example@gmail.com")
+    'email': fields.String(description='Email', required=False, example="example@example.com")
 })
 
 jwt_fields = Auth.model('JWT', {
     'Authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="eyJ0e~~~~~~~~~")
 })
 
-@Auth.route('/login')
+@Auth.route('/login', methods=["POST"])
 class AuthLogin(Resource):
-    @Auth.expect(user_fields)
+    @Auth.expect(user_fields_auth)
     @Auth.doc(responses={200: 'Success'})
     @Auth.doc(responses={500: 'Register Failed'})
     def post(self):
@@ -42,24 +44,23 @@ class AuthLogin(Resource):
             }, 500
         else:
             return {
-                'Authorization': jwt.encode({'userid': user['userid']}, "secret", algorithm="HS256") # str으로 반환하여 return
+                'Authorization': create_access_token(identity=username, expires_delta=timedelta(hours=3))
             }, 200
 
-@Auth.route('/register')
+@Auth.route('/register', methods=["POST"])
 class AuthRegister(Resource):
-    @Auth.expect(user_fields_auth)
+    @Auth.expect(user_fields)
     @Auth.doc(responses={200: 'Success'})
     @Auth.doc(responses={404: 'User Not Found'})
     @Auth.doc(responses={500: 'Auth Failed'})
     def post(self):
         try:
-            # 프론트에서 넘겨준 json 파일의 데이터 저장
-            username = request.json['username'] # 유저 ID
-            password = request.json['password'] # 비밀번호
-            name = request.json['name']         # 이름
-            email = request.json['email']       # 이메일주소
+            # Request JSON 데이터 저장
+            username = request.json['username']     # 유저 ID
+            password = request.json['password']     # 비밀번호
+            name = request.json['name']             # 이름
+            email = request.json['email']           # 이메일주소
             
-
             # 중복 되는 회원 있는지 확인
             result = Users.select().where(Users.c.username == username).execute().first()
             if result:
@@ -67,15 +68,12 @@ class AuthRegister(Resource):
                     "message": "User already exists."
                 }, 404
 
-            else:
-            # 회원 정보 DB에 추가
-                with engine.connect() as con:
+            else:   # 회원 정보 DB에 추가
+                with engine.begin() as conn:
                     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-                    con.execute(Users.insert(), username=username, password=password, name=name, email=email)
-                    user = Users.select().where(Users.c.username == username).execute().first()
-                    
+                    conn.execute(Users.insert(), username=username, password=password, name=name, email=email)
                     return {
-                        'Authorization': jwt.encode({'userid': user['userid']}, "secret", algorithm="HS256")
+                        'Authorization': create_access_token(identity=username, expires_delta=timedelta(hours=3))
                     }, 200
 
         except:
@@ -83,13 +81,12 @@ class AuthRegister(Resource):
                 "message": "Auth Failed"
             }, 500
 
-@Auth.route('/get')
+@Auth.route('', methods=["GET"])
 class AuthGet(Resource):
+    @Auth.expect(jwt_fields)
     @Auth.doc(responses={200: 'Success'})
     @Auth.doc(responses={404: 'Login Failed'})
+    @jwt_required()
     def get(self):
-        header = request.headers.get('Authorization')  # Authorization 헤더로 담음
-        if header == None:
-            return {"message": "Please Login"}, 404
-        data = jwt.decode(header, "secret", algorithms="HS256")
-        return data, 200
+        current_user = get_jwt_identity()
+        return {"username": current_user}, 200
