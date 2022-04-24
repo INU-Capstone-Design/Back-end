@@ -57,7 +57,7 @@ class WorkspaceManage(Resource):
         result = Workspaces.select().where(Workspaces.c.workspaceid==workspaceid).execute().first()
         if result:
             return {
-                "master": result["username"],
+                "master": result["master"],
                 "title": result["title"],
                 "mindmap": result["mindmap"]
             }, 200
