@@ -18,6 +18,11 @@
 
 ## API service
 ### Example:
+- REST API Documents
+```
+http://localhost
+```
+
 - User 로그인
 ```
 [POST] http://localhost/auth/login
