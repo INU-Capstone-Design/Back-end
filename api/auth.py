@@ -67,7 +67,7 @@ class AuthRegister(Resource):
                 return {
                     "message": "User already exists."
                 }, 404
-
+            
             else:   # 회원 정보 DB에 추가
                 with engine.begin() as conn:
                     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -75,7 +75,7 @@ class AuthRegister(Resource):
                     return {
                         'Authorization': create_access_token(identity=username, expires_delta=timedelta(hours=3))
                     }, 200
-
+            
         except:
             return {
                 "message": "Auth Failed"

@@ -4,8 +4,10 @@ from flask_jwt_extended import JWTManager
 from config import config
 from auth import Auth
 from workspace import Workspace
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(config["dev"])
 jwt = JWTManager(app)
 api = Api(app)
@@ -13,7 +15,5 @@ api = Api(app)
 api.add_namespace(Auth, '/auth')
 api.add_namespace(Workspace, '/workspace')
 
-
-
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=80)
