@@ -6,7 +6,7 @@ SQLALCHEMY_DATABASE_URI = ("mysql+pymysql://{USER}:{PASSWORD}@{ADDR}:{PORT}/{NAM
 SQLALCHEMY_DATABASE_URI_FORMAT = SQLALCHEMY_DATABASE_URI.format(
     USER="root",
     PASSWORD="1234",
-    ADDR="mysql",
+    ADDR="localhost",
     PORT=3306,
     NAME="minders"
 )

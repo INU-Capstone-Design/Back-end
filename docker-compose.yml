@@ -1,12 +1,12 @@
 version: "3"
 
 services:
-  api:
-    build: ./api
-    container_name: flask_api
-    restart: always
-    ports:
-      - "80:80"
+  # api:
+  #   build: ./api
+  #   container_name: flask_api
+  #   restart: always
+  #   ports:
+  #     - "80:80"
     
   mysql:
     image: mysql:latest
