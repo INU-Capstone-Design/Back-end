@@ -2,14 +2,17 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-SQLALCHEMY_DATABASE_URI = ("mysql+pymysql://{USER}:{PASSWORD}@{ADDR}:{PORT}/{NAME}?charset=utf8")
-SQLALCHEMY_DATABASE_URI_FORMAT = SQLALCHEMY_DATABASE_URI.format(
-    USER="root",
-    PASSWORD="1234",
-    ADDR="localhost",
-    PORT=3306,
-    NAME="minders"
-)
+USER="root"
+PASSWORD="1234"
+try:
+    ADDR=os.environ["DATABASE"]
+except:
+    ADDR="localhost"
+PORT=3306
+NAME="minders"
+
+SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{USER}:{PASSWORD}@{ADDR}:{PORT}/{NAME}?charset=utf8"
+
 
 class Config(object):
     DEBUG = False
@@ -17,7 +20,7 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = "super-secret"
     JWT_SECRET_KEY = "secret"
-    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI_FORMAT
+    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI
 
 
 class ProductionConfig(Config):
@@ -26,6 +29,7 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
+    ENV = "development"
     DEVELOPMENT = True
     DEBUG = True
     NAME = "DEV"

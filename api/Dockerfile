@@ -5,6 +5,6 @@ WORKDIR /api
 
 RUN pip install -r requirements.txt
 
-RUN sleep 5
+ENV CONFIG=prod HOST=0.0.0.0 PORT=80 DATABASE=mysql
 
 CMD [ "python3", "-u", "app.py" ]

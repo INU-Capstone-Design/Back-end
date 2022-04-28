@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table
-from config import SQLALCHEMY_DATABASE_URI_FORMAT
+from config import SQLALCHEMY_DATABASE_URI
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI_FORMAT, convert_unicode=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, convert_unicode=True)
 metadata = MetaData(bind=engine)
 
 Users = Table('Users', metadata, autoload_with=engine)
