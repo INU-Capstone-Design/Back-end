@@ -3,11 +3,18 @@ version: "3"
 services:
   api:
     build: ./api
-    container_name: flask_api
+    container_name: api
+    restart: always
+    expose:
+      - 5000
+  
+  nginx:
+    build: ./nginx
+    container_name: nginx
     restart: always
     ports:
       - "80:80"
-    
+
   mysql:
     image: mysql:latest
     container_name: mysql
