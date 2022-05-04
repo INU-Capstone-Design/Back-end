@@ -7,7 +7,7 @@
 
 * [Architecture diagram](#architecture-diagram)
 * [Prerequisites](#prerequisites)
-* [Database ERD](#database-schema)
+* [Database ERD](#database-erd)
 * [Model information](#model-information)
 * [Running project](#running-project)
 * [API service](#api-service)
