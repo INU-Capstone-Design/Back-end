@@ -13,6 +13,4 @@ ENV PYTHONPATH "${PYTHONPATH}:/api"
 
 RUN pip install -r requirements.txt
 
-RUN chmod 755 ./entrypoint.sh
-
-CMD [ "./entrypoint.sh" ]
+CMD ["uwsgi", "uwsgi.ini"]
