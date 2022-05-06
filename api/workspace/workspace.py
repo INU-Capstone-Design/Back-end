@@ -15,7 +15,7 @@ workspace_fields = Workspace.model('Workspace', {  # Model 객체 생성
 })
 
 jwt_fields = Workspace.model('JWT', {
-    'Authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="eyJ0e~~~~~~~~~")
+    'authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="Bearer eyJ0e~~~~~~~~~")
 })
 
 # ----워크스페이스 관리----
@@ -25,8 +25,15 @@ class WorkspaceCreate(Resource):
     @Workspace.expect(workspace_fields)
     @Workspace.doc(responses={200: 'Success'})
     @Workspace.doc(responses={500: 'Create fail'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def post(self):
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert JWT in your header"
+            }, 500
+        
         try:
             title = request.json['title']
             mindmap = request.json['mindmap']
@@ -53,8 +60,15 @@ class WorkspaceManage(Resource):
     @Workspace.expect(jwt_fields)
     @Workspace.doc(responses={200: 'Success'})
     @Workspace.doc(responses={500: 'Search fail'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self, workspaceid: int):
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert JWT in your header"
+            }, 500
+            
         result = Workspaces.select().where(Workspaces.c.workspaceid==workspaceid).execute().first()
         if result:
             return {
@@ -71,8 +85,15 @@ class WorkspaceManage(Resource):
     @Workspace.expect(workspace_fields)
     @Workspace.doc(responses={200: 'Success'})
     @Workspace.doc(responses={500: 'Update fail'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def put(self, workspaceid: int):
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert JWT in your header"
+            }, 500
+            
         try:
             title = request.json["title"]
             mindmap = request.json["mindmap"]
@@ -90,8 +111,15 @@ class WorkspaceManage(Resource):
     @Workspace.expect(jwt_fields)
     @Workspace.doc(responses={200: 'Success'})
     @Workspace.doc(responses={500: 'Delete fail'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def delete(self, workspaceid: int):
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert in to your header"
+            }, 500
+            
         try:
             Workspaces.delete().where(Workspaces.c.workspaceid==workspaceid).execute()
             return {

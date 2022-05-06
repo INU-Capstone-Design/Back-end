@@ -9,7 +9,7 @@ User = Namespace(
 )
 
 jwt_fields = User.model('JWT', {
-    'Authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="eyJ0e~~~~~~~~~")
+    'authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="Bearer eyJ0e~~~~~~~~~")
 })
 
 @User.route('')
@@ -18,14 +18,20 @@ class UserManage(Resource):
     @User.expect(jwt_fields)
     @User.doc(responses={200: 'Success'})
     @User.doc(responses={500: 'User info get fail'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self):
-        username = get_jwt_identity()
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert JWT in your header"
+            }, 500
+        
         try:
             stmt = text(f"SELECT u.username, u.name, u.email, g.workspaceid\
                         FROM Users as u\
                         LEFT JOIN Groupings as g ON u.username=g.username\
-                        WHERE u.username='{username}'")
+                        WHERE u.username='{identity}'")
             
             with engine.begin() as conn:
                 result = conn.execute(stmt).fetchall()
@@ -38,5 +44,5 @@ class UserManage(Resource):
             
         except:
             return {
-                "message": "User reading fail"
+                "message": "유저를 찾는데 실패하였습니다."
             }, 500

@@ -21,7 +21,7 @@ user_fields = Auth.inherit('User', user_fields_auth, {
 })
 
 jwt_fields = Auth.model('JWT', {
-    'Authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="eyJ0e~~~~~~~~~")
+    'authorization': fields.String(description='Authorization which you must inclued in header', required=True, example="Bearer eyJ0e~~~~~~~~~")
 })
 
 @Auth.route('/login', methods=["POST"])
@@ -86,7 +86,13 @@ class AuthGet(Resource):
     @Auth.expect(jwt_fields)
     @Auth.doc(responses={200: 'Success'})
     @Auth.doc(responses={404: 'Login Failed'})
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self):
-        current_user = get_jwt_identity()
-        return {"username": current_user}, 200
+        identity = get_jwt_identity()
+        
+        if not identity:
+            return {
+                "message": "Please insert JWT in your header"
+            }, 500
+            
+        return {"username": identity}, 200
