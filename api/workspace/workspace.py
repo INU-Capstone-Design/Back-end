@@ -45,6 +45,7 @@ class WorkspaceCreate(Resource):
                 conn.execute(Groupings.insert(), username=master, workspaceid=workspaceid)
             
             return {
+                    "id": workspaceid,
                     "message": "Workspace create success"
                 }, 200
                 
