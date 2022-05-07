@@ -21,7 +21,7 @@ CREATE TABLE Workspaces (
     workspaceid     INT NOT NULL AUTO_INCREMENT,
     master          VARCHAR(30) NOT NULL,
     title           VARCHAR(50) NOT NULL,
-    mindmap         LONGTEXT NOT NULL,
+    mindmap         JSON NOT NULL,
     create_time     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY     (workspaceid),
