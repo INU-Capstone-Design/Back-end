@@ -13,7 +13,7 @@
 * [API service](#api-service)
 
 ## Architecture Diagram
-![Architecture](./img/architecture.png)
+![Architecture](./img/Architecture.png)
 
 ## Prerequisites
 프로젝트를 실행시키기 위해 필요한 소프트웨어.
